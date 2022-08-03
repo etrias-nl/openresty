@@ -1,7 +1,9 @@
+FROM stephenc/envsub:0.1.3 as envsub
+
 FROM bitnami/openresty:1.19.9-1
 
 USER 0
-RUN install_packages gettext-base
+COPY --from=envsub /bin/envsub /usr/bin/
 
 COPY serverblocks/00_logformat.conf /opt/bitnami/openresty/nginx/conf/server_blocks/
 RUN chown -R 1001 /opt/bitnami/openresty/nginx/conf/server_blocks/
