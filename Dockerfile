@@ -1,6 +1,6 @@
 FROM stephenc/envsub:0.1.3 as envsub
 
-FROM bitnami/openresty:1.19.9-1
+FROM bitnami/openresty:1.21.4-1
 
 USER 0
 COPY --from=envsub /bin/envsub /usr/bin/
