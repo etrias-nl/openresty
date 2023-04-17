@@ -13,9 +13,3 @@ Mount openresty/nginx server blocks in $NGINX_ENVSUBST_TEMPLATE_DIR
 It will substitute the env variables and put the files in $ NGINX_ENVSUBST_OUTPUT_DIR
 
 Then openresty wil start
-
-
-# Release
-```bash
-make version=x.x.x release
-```

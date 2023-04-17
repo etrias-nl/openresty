@@ -1,54 +1,20 @@
-# import deploy config
-# You can change the default deploy config with `make cnf="deploy_special.env" release`
-dpl ?= deploy.env
-include $(dpl)
-export $(shell sed 's/=.*//' $(dpl))
+MAKEFLAGS += --warn-undefined-variables --always-make
+.DEFAULT_GOAL := _
 
-# HELP
-# This will output the help for each task
-# thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
-.PHONY: help
+DOCKER_PROGRESS?=auto
+DOCKER_IMAGE=etriasnl/openresty
+OPENRESTY_VERSION=0.2.1
+PATCH_VERSION=$$(($(shell curl -sS "https://hub.docker.com/v2/repositories/${DOCKER_IMAGE}/tags/?page_size=1&page=1&name=${OPENRESTY_VERSION}-&ordering=last_updated" | jq -r '.results[0].name' | cut -f2 -d '-') + 1))
 
-help: ## This help.
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+exec_docker=docker run $(shell [ "$$CI" = true ] && echo "-t" || echo "-it") -u "$(shell id -u):$(shell id -g)" --rm -v "$(shell pwd):/app" -w /app
 
-.DEFAULT_GOAL := help
-
-
-# DOCKER TASKS
-# Build the container
-build: ## Build the container
-ifndef version
-$(error version is not defined)
-endif
-	docker buildx build -t $(APP_NAME) .
-
-release: build publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
-
-# Docker publish
-publish: publish-latest publish-version ## Publish the `{version}` ans `latest` tagged containers to ECR
-
-publish-latest: tag-latest ## Publish the `latest` taged container to ECR
-	@echo 'publish latest to $(DOCKER_REPO)'
-	docker push $(DOCKER_REPO)/$(APP_NAME):latest
-
-publish-version: tag-version ## Publish the `{version}` taged container to ECR
-ifndef version
-$(error version is not defined)
-endif
-	@echo 'publish $(version) to $(DOCKER_REPO)'
-	docker push $(DOCKER_REPO)/$(APP_NAME):$(version)
-
-# Docker tagging
-tag: tag-latest tag-version ## Generate container tags for the `{version}` ans `latest` tags
-
-tag-latest: ## Generate container `{version}` tag
-	@echo 'create tag latest'
-	docker tag $(APP_NAME) $(DOCKER_REPO)/$(APP_NAME):latest
-
-tag-version: ## Generate container `latest` tag
-ifndef version
-$(error version is not defined)
-endif
-	@echo 'create tag $(version)'
-	docker tag $(APP_NAME) $(DOCKER_REPO)/$(APP_NAME):$(version)
+lint-yaml:
+	${exec_docker} cytopia/yamllint .
+lint-dockerfile:
+	${exec_docker} hadolint/hadolint hadolint Dockerfile
+lint: lint-yaml lint-dockerfile
+release:
+	git tag "${OPENRESTY_VERSION}-${PATCH_VERSION}"
+	git push --tags
+build: lint
+	docker buildx build --progress "${DOCKER_PROGRESS}" --tag "${DOCKER_IMAGE}:$(shell git describe --tags)" .
