@@ -1,4 +1,4 @@
-FROM stephenc/envsub:0.1.3 as envsub
+FROM stephenc/envsub:0.1.3 AS envsub
 
 FROM bitnami/openresty:1.19.9-1
 
