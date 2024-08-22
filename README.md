@@ -1,15 +1,9 @@
-Image based on bitnami/openresty but with envsubst enabled.
+# Hello
 
-Sensible defaults:
+This repository is for internal use. Feel free to fork it and modify it as you wish.
 
-| ENV | default |
-|--|--|
-| NGINX_ENVSUBST_TEMPLATE_DIR       | /opt/bitnami/openresty/nginx/conf/server_block_templates  |
-| NGINX_ENVSUBST_TEMPLATE_SUFFIX | .conf  |
-| NGINX_ENVSUBST_OUTPUT_DIR           | /opt/bitnami/openresty/nginx/conf/server_blocks   |
+See GitHub Actions to discover tested features.
 
+Dependencies are managed by Renovate.
 
-Mount openresty/nginx server blocks in $NGINX_ENVSUBST_TEMPLATE_DIR
-It will substitute the env variables and put the files in $ NGINX_ENVSUBST_OUTPUT_DIR
-
-Then openresty wil start
+PRs welcome that are must-have :)
