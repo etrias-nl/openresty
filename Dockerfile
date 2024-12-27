@@ -1,9 +1,6 @@
-FROM registry.k8s-bizhost.nl/library/envsub:0.1.3 AS envsub
-
 FROM bitnami/openresty:1.27.1-1
 
 USER 0
-COPY --from=envsub /bin/envsub /usr/bin/
 
 COPY serverblocks/00_logformat.conf /opt/bitnami/openresty/nginx/conf/server_blocks/
 RUN chown -R 1001 /opt/bitnami/openresty/nginx/conf/server_blocks/
