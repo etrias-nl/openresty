@@ -11,17 +11,13 @@ env:
     DOCKER_IMAGE: etriasnl/openresty
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+    build_bizhost:
+        runs-on: ubuntu-bizhost
         steps:
             -
                 uses: actions/checkout@v4.2.2
             -
                 uses: docker/setup-buildx-action@v3.8.0
-                with:
-                    buildkitd-config-inline: |
-                        [registry."docker.io"]
-                            mirrors = ["mirror.gcr.io"]
             -
                 id: build
                 uses: docker/build-push-action@v6.10.0
@@ -50,7 +46,6 @@ jobs:
                 uses: docker/build-push-action@v6.10.0
                 with:
                     context: .
-                    platforms: linux/amd64,linux/arm64
                     push: true
                     tags: ${{ steps.meta.outputs.tags }}
                     labels: ${{ steps.meta.outputs.labels }}
