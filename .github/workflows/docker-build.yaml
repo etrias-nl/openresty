@@ -32,8 +32,8 @@ jobs:
                     cache-from: type=gha
                     cache-to: type=gha,mode=max
             -
-               run: |
-                   docker run --rm "${{ steps.build.outputs.imageid }}" openresty -v
+                run: |
+                    docker run --rm "${{ steps.build.outputs.imageid }}" openresty -v
             -
                 uses: docker/login-action@v3.3.0
                 with:
