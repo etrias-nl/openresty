@@ -11,8 +11,11 @@ env:
     DOCKER_IMAGE: etriasnl/openresty
 
 jobs:
-    build_bizhost:
-        runs-on: ubuntu-bizhost
+    build:
+        strategy:
+            matrix:
+                runner: [ ubuntu-latest, ubuntu-bizhost ]
+        runs-on: ${{ matrix.runner }}
         steps:
             -
                 uses: actions/checkout@v4.2.2
